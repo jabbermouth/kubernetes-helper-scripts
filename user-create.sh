@@ -38,6 +38,16 @@ while getopts ":u:c:e:r:h:d:s:g:p:k:" opt; do
   esac
 done
 
+if [ "$username" == "" ]; then
+echo ERROR: You must specifiy a user name in the format first-name
+exit 1
+fi
+
+if [ "$dockerpat" == "" ]; then
+echo ERROR: You must specifiy a Docker Hub PAT
+exit 2
+fi
+
 echo generating certificate
 
 sudo openssl genrsa -out user-$username.key 2048
