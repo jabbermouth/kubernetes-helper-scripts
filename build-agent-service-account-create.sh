@@ -4,10 +4,9 @@ dockerhubsecret="dockerhub-jabbermouth"
 dockeruser="jabbermouth"
 dockerpat=""
 namespaces=development,qa,production
-kubernetescontrolplane="kubectl.jabbermouth.co.uk"
 serviceaccountname=tfsbuildagent
 
-while getopts ":n:h:d:s:p:s:" opt; do
+while getopts ":n:h:d:s:a:" opt; do
   case $opt in
     n) namespaces="$OPTARG"
     ;;
@@ -17,9 +16,7 @@ while getopts ":n:h:d:s:p:s:" opt; do
     ;;
     s) dockerhubsecret="$OPTARG"
     ;;
-    p) kubernetescontrolplane="$OPTARG"
-    ;;
-    s) serviceaccountname="$OPTARG"
+    a) serviceaccountname="$OPTARG"
     ;;
     \?) echo "Invalid option -$OPTARG" >&2
     ;;
