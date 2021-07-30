@@ -2,7 +2,7 @@
 
 username=""
 namespaceexec=development
-namespaceread=qa
+namespaceread=qa,production
 kubernetescontrolplane="kubectl.jabbermouth.co.uk"
 
 while getopts ":u:e:r:p:" opt; do

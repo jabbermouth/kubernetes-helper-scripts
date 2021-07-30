@@ -7,10 +7,11 @@ dockerpat=""
 adspat=""
 company=jabbermouth
 namespaceexec=development
-namespaceread=qa
+namespaceread=qa,production
 kubernetescontrolplane="kubectl.jabbermouth.co.uk"
+keepusercerts=false
 
-while getopts ":u:c:e:r:h:d:s:g:p:" opt; do
+while getopts ":u:c:e:r:h:d:s:g:p:k:" opt; do
   case $opt in
     u) username="$OPTARG"
     ;;
@@ -29,6 +30,8 @@ while getopts ":u:c:e:r:h:d:s:g:p:" opt; do
     g) adspat="$OPTARG"
     ;;
     p) kubernetescontrolplane="$OPTARG"
+    ;;
+    k) keepusercerts=($OPTARG="true")
     ;;
     \?) echo "Invalid option -$OPTARG" >&2
     ;;
@@ -80,11 +83,23 @@ current-context: $username-context@kubernetes
 EOM
 
 
-if [ "$4" != "" ]; then
+if [ keepusercerts == true ]; then
 echo storing certificate to allow context use
 
 kubectl config set-credentials $username --client-certificate=user-$username.crt  --client-key=user-$username.key
-kubectl config set-context $username-context --cluster=kubernetes --namespace=$namespaceexec --user=$username
+
+IFS=',' read -r -a array <<< "$namespaceexec"
+for namespace in "${array[@]}"
+do
+kubectl config set-context $username-context --cluster=kubernetes --namespace=$namespace --user=$username
+done
+
+IFS=',' read -r -a array <<< "$namespaceread"
+for namespace in "${array[@]}"
+do
+kubectl config set-context $username-context --cluster=kubernetes --namespace=$namespace --user=$username
+done
+
 else
 echo discarding certificates
 
