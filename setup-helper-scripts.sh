@@ -5,3 +5,4 @@ chmod +x helpers/user-delete.sh
 chmod +x helpers/refresh.sh
 chmod +x helpers/build-agent-service-account-create.sh
 chmod +x helpers/kaniko-setup.sh
+chmod +x helpers/build-agent-get-for-ads.sh
