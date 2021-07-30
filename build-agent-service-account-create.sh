@@ -102,7 +102,7 @@ do
 if [ "$dockerpat" != "" ]; then
 echo Docker Hub PAT specified so adding Docker Hub secret to allow repo access
 
-kubectl delete secret dockerhub-cabi -n sandbox-$username
+kubectl delete secret $dockerhubsecret -n $namespace
 
 kubectl create secret docker-registry $dockerhubsecret --docker-username=$dockeruser --docker-password=$dockerpat --docker-email= --namespace $namespace
 fi
