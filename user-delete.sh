@@ -20,6 +20,11 @@ while getopts ":u:e:r:p:" opt; do
   esac
 done
 
+if [ "$username" == "" ]; then
+echo ERROR: You must specifiy a user name in the format first-name
+exit 1
+fi
+
 echo Removing user context if present
 kubectl config delete-context $username-context
 
