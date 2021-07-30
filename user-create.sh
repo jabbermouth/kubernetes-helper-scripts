@@ -124,7 +124,7 @@ kubectl create ns sandbox-$username
 if [ "$dockerpat" != "" ]; then
 echo Docker Hub PAT specified so adding Docker Hub secret to allow repo access
 
-kubectl delete secret dockerhub-cabi -n sandbox-$username
+kubectl delete secret $dockerhubsecret -n sandbox-$username
 
 kubectl create secret docker-registry $dockerhubsecret --docker-username=$dockeruser --docker-password=$dockerpat --docker-email= --namespace sandbox-$username
 fi
