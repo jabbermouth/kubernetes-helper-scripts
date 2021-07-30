@@ -128,7 +128,7 @@ echo remove service account definition for $namespace
 rm -f buildagent-serviceaccount-$namespace.yaml
 
 echo add service account to cluster role binding
-cat <<EOM >buildagent-rolebinding.yaml
+cat <<EOM >>buildagent-rolebinding.yaml
 - kind: ServiceAccount
   name: $serviceaccountname
   namespace: $namespace
