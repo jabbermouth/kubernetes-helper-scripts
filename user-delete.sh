@@ -13,10 +13,12 @@ while getopts ":u:e:r:?:" opt; do
     r) namespaceread="$OPTARG"
     ;;
     ?) 
-    echo Options
-    echo u = user name (in the format first-name) of account to delete
+    echo "Usage: helpers/user-delete.sh [OPTIONS]"
+    echo
+    echo "Options"
+    echo "u = user name (in the format first-name) of account to delete"
     echo "e = exec capable namespaces (comma delimited) of all exec-enabled namespaces (default: $namespaceexec)"
-    echo "r = readonly namespaces (comma delimited) of all readonly namespaces (default: $namespaceread)""
+    echo "r = readonly namespaces (comma delimited) of all readonly namespaces (default: $namespaceread)"
     exit 0
     ;;
     \?) echo "Invalid option -$OPTARG" >&2

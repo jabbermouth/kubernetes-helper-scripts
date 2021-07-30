@@ -11,7 +11,9 @@ while getopts ":n:a:?:" opt; do
     a) serviceaccountname="$OPTARG"
     ;;
     ?) 
-    echo Options
+    echo "Usage: helpers/build-agent-get-for-ads.sh [OPTIONS]"
+    echo
+    echo "Options"
     echo "n = namespace to retrieve secret from"
     echo "d = name of service account to look up (default: $serviceaccountname)"
     exit 0
