@@ -3,17 +3,13 @@
 username=""
 namespaceexec=development
 namespaceread=qa,production
-kubernetescontrolplane="kubectl.jabbermouth.co.uk"
-
-while getopts ":u:e:r:p:" opt; do
+while getopts ":u:e:r:" opt; do
   case $opt in
     u) username="$OPTARG"
     ;;
     e) namespaceexec="$OPTARG"
     ;;
     r) namespaceread="$OPTARG"
-    ;;
-    p) kubernetescontrolplane="$OPTARG"
     ;;
     \?) echo "Invalid option -$OPTARG" >&2
     ;;
