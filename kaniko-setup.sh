@@ -3,11 +3,19 @@
 namespace=build-agents
 dockersecret=dockerhub-jabbermouth
 
-while getopts ":n:d:" opt; do
+while getopts ":n:d:?:" opt; do
   case $opt in
     n) namespace="$OPTARG"
     ;;
     d) dockersecret="$OPTARG"
+    ;;
+    ?) 
+    echo "Usage: helpers/kaniko-setup.sh [OPTIONS]"
+    echo
+    echo "Options"
+    echo "n = namespace to create kaniko account in (default: $namespace)"
+    echo "d = name of Docker Hub secret to use (default: $dockersecret)"
+    exit 0
     ;;
     \?) echo "Invalid option -$OPTARG" >&2
     ;;
