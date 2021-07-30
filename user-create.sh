@@ -1,6 +1,8 @@
 #!/bin/bash
 
 username=""
+dockerhubsecret="dockerhub-jabbermouth"
+dockeruser="jabbermouth"
 dockerpat=""
 adspat=""
 company=jabbermouth
@@ -8,7 +10,7 @@ namespaceexec=development
 namespaceread=qa
 kubernetescontrolplane="kubectl.jabbermouth.co.uk"
 
-while getopts ":u:c:e:r:d:g:p:" opt; do
+while getopts ":u:c:e:r:h:d:s:g:p:" opt; do
   case $opt in
     u) username="$OPTARG"
     ;;
@@ -18,7 +20,11 @@ while getopts ":u:c:e:r:d:g:p:" opt; do
     ;;
     r) namespaceread="$OPTARG"
     ;;
+    h) dockeruser="$OPTARG"
+    ;;
     d) dockerpat="$OPTARG"
+    ;;
+    s) dockerhubsecret="$OPTARG"
     ;;
     g) adspat="$OPTARG"
     ;;
@@ -90,12 +96,15 @@ echo creating sandbox
 
 kubectl create ns sandbox-$username
 
-echo adding Docker Hub secret to allow repo access
+if [ "$dockerpat" != "" ]; then
+echo Docker Hub PAT specified so adding Docker Hub secret to allow repo access
 
 kubectl delete secret dockerhub-cabi -n sandbox-$username
 
-kubectl create secret docker-registry dockerhub-cabi --docker-username=cabicicd --docker-password=$dockerpat --docker-email= --namespace sandbox-$username
+kubectl create secret docker-registry $dockerhubsecret --docker-username=$dockeruser --docker-password=$dockerpat --docker-email= --namespace sandbox-$username
+fi
 
+if [ "$adspat" != "" ]; then
 echo fetching config from Git
 
 rm -R -f cabi-config
@@ -106,6 +115,7 @@ echo setting up config files using Helm chart
 helm repo add cabi https://helm.cabi.org/
 helm repo update
 helm upgrade --namespace sandbox-$username --install -f cabi-config/common.yaml -f cabi-config/development.yaml -f cabi-config/sandbox.yaml --set cabiUrls.overrideNamespace=development cabi-configuration cabi/CabiConfiguration
+fi
 
 echo generate roles and add role bindings
 
