@@ -8,7 +8,7 @@ adspat=""
 company=jabbermouth
 namespaceexec=development
 namespaceread=qa,production
-kubernetescontrolplane="kubectl.jabbermouth.co.uk"
+kubernetescontrolplane=$(kubectl config view --minify -o jsonpath={.clusters[0].cluster.server})
 keepusercerts=false
 
 while getopts ":u:c:e:r:h:d:s:g:p:k:" opt; do
@@ -81,7 +81,7 @@ users:
 clusters:
 - cluster:
     certificate-authority-data: $cacrt
-    server: https://$kubernetescontrolplane:6443
+    server: $kubernetescontrolplane
   name: kubernetes
 contexts:
 - context:
