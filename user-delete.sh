@@ -3,13 +3,21 @@
 username=""
 namespaceexec=development
 namespaceread=qa,production
-while getopts ":u:e:r:" opt; do
+
+while getopts ":u:e:r:?:" opt; do
   case $opt in
     u) username="$OPTARG"
     ;;
     e) namespaceexec="$OPTARG"
     ;;
     r) namespaceread="$OPTARG"
+    ;;
+    ?) 
+    echo Options
+    echo u = user name (in the format first-name) of account to delete
+    echo e = exec capable namespaces (comma delimited) of all exec-enabled namespaces (default: $namespaceexec)
+    echo r = readonly namespaces (comma delimited) of all readonly namespaces (default: $namespaceread)
+    exit 0
     ;;
     \?) echo "Invalid option -$OPTARG" >&2
     ;;

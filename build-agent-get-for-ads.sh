@@ -4,13 +4,17 @@ namespace=""
 serviceaccountname=tfsbuildagent
 kubernetescontrolplane=$(kubectl config view --minify -o jsonpath={.clusters[0].cluster.server})
 
-while getopts ":n:d:a:" opt; do
+while getopts ":n:a:?:" opt; do
   case $opt in
     n) namespace="$OPTARG"
     ;;
-    d) dockersecret="$OPTARG"
-    ;;
     a) serviceaccountname="$OPTARG"
+    ;;
+    ?) 
+    echo Options
+    echo n = namespace to retrieve secret from
+    echo d = name of service account to look up (default: $serviceaccountname)
+    exit 0
     ;;
     \?) echo "Invalid option -$OPTARG" >&2
     ;;
