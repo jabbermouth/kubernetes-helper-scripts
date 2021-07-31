@@ -11,7 +11,7 @@ namespaceread=qa,production
 kubernetescontrolplane=$(kubectl config view --minify -o jsonpath={.clusters[0].cluster.server})
 keepusercerts=false
 
-while getopts ":u:c:e:r:h:d:s:g:p:k:" opt; do
+while getopts ":u:c:e:r:h:d:s:g:p:k:?:" opt; do
   case $opt in
     u) username="$OPTARG"
     ;;
@@ -32,6 +32,22 @@ while getopts ":u:c:e:r:h:d:s:g:p:k:" opt; do
     p) kubernetescontrolplane="$OPTARG"
     ;;
     k) keepusercerts=($OPTARG="true")
+    ;;
+    ?) 
+    echo "Usage: helpers/user-create.sh [OPTIONS]"
+    echo
+    echo "Options"
+    echo "u = user name (in the format first-name) of account to create"
+    echo "c = name of company used in generated certificate (default: $company)"
+    echo "e = namespaces to grant user exec rights to (default: $namespaceexec)"
+    echo "r = namespaces to grant user readonly (e.g. list pods, see logs) rights to (default: $namespaceread)"
+    echo "h = name of Docker Hub user (default: $dockeruser)"
+    echo "d = Docker Hub PAT to use for connecting - if blank (default) then no secret will be created"
+    echo "s = name of secret used to store Docker Hub credentials (default: $dockerhubsecret)"
+    echo "g = Azure DevOps Services PAT to use for populating standard CABI configuration"
+    echo "k = if true, user certificates are added to the local configuration to allow use on this machine (default: $keepusercerts)"
+    echo "p = Protocol, IP/name and port of Kubernetes control plane (default: $kubernetescontrolplane)"
+    exit 0
     ;;
     \?) echo "Invalid option -$OPTARG" >&2
     ;;
@@ -140,6 +156,10 @@ echo setting up config files using Helm chart
 helm repo add cabi https://helm.cabi.org/
 helm repo update
 helm upgrade --namespace sandbox-$username --install -f cabi-config/common.yaml -f cabi-config/development.yaml -f cabi-config/sandbox.yaml --set cabiUrls.overrideNamespace=development cabi-configuration cabi/CabiConfiguration
+
+echo removing configuration files from local disk
+rm -R -f cabi-config
+
 fi
 
 echo generate roles and add role bindings

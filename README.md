@@ -9,3 +9,8 @@ Once installed, you can run the following command to update the scripts:
 ```
 helpers/refresh.sh
 ```
+
+To get details of all parameters, you can use -?.  For example:
+```
+helpers/user-create.sh -?
+```
