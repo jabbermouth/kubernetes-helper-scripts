@@ -13,8 +13,8 @@ while getopts ":n:d:?:" opt; do
     echo "Usage: helpers/kaniko-setup.sh [OPTIONS]"
     echo
     echo "Options"
-    echo "n = namespace to create kaniko account in (default: $namespace)"
-    echo "d = name of Docker Hub secret to use (default: $dockersecret)"
+    echo "  n = namespace to create kaniko account in (default: $namespace)"
+    echo "  d = name of Docker Hub secret to use (default: $dockersecret)"
     exit 0
     ;;
     \?) echo "Invalid option -$OPTARG" >&2

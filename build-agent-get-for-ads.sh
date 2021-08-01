@@ -14,8 +14,8 @@ while getopts ":n:a:?:" opt; do
     echo "Usage: helpers/build-agent-get-for-ads.sh [OPTIONS]"
     echo
     echo "Options"
-    echo "n = namespace to retrieve secret from"
-    echo "d = name of service account to look up (default: $serviceaccountname)"
+    echo "  n = namespace to retrieve secret from"
+    echo "  d = name of service account to look up (default: $serviceaccountname)"
     exit 0
     ;;
     \?) echo "Invalid option -$OPTARG" >&2

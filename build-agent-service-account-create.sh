@@ -22,11 +22,11 @@ while getopts ":n:h:d:s:a:?:" opt; do
     echo "Usage: helpers/build-service-account-create.sh [OPTIONS]"
     echo
     echo "Options"
-    echo "n = namespaces to create build agent accounts in (default: $namespaces)"
-    echo "d = name of Docker Hub user (default: $dockeruser)"
-    echo "p = Docker Hub PAT to use for connecting - if blank (default) then no secret will be created"
-    echo "s = name of secret used to store Docker Hub credentials (default: $dockerhubsecret)"
-    echo "a = name of service account to create (default: $serviceaccountname)"
+    echo "  n = namespaces to create build agent accounts in (default: $namespaces)"
+    echo "  d = name of Docker Hub user (default: $dockeruser)"
+    echo "  p = Docker Hub PAT to use for connecting - if blank (default) then no secret will be created"
+    echo "  s = name of secret used to store Docker Hub credentials (default: $dockerhubsecret)"
+    echo "  a = name of service account to create (default: $serviceaccountname)"
     exit 0
     ;;
     \?) echo "Invalid option -$OPTARG" >&2
