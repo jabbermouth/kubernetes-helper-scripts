@@ -4,14 +4,20 @@ username=""
 dockerhubsecret="dockerhub-jabbermouth"
 dockeruser="jabbermouth"
 dockerpat=""
-adspat=""
+configgitrepo="https://Jabbermouth@dev.azure.com/Jabbermouth/Current%20Projects/_git/Jabbermouth.Configuration"
+configurationname="common-configuration-values"
+valuefiles="common,development,sandbox"
+overrideenvironment="development"
+confighelmchartreponame="jabbermouth"
+confighelmchartrepo="https://helm.jabbermouth.co.uk/"
+confighelmchart="Configuration"
 company=jabbermouth
 namespaceexec=development
 namespaceread=qa,production
 kubernetescontrolplane=$(kubectl config view --minify -o jsonpath={.clusters[0].cluster.server})
 keepusercerts=false
 
-while getopts ":u:c:e:r:h:d:s:g:p:k:?:" opt; do
+while getopts ":u:c:e:r:h:d:s:a:v:w:x:y:z:o:g:p:k:?:" opt; do
   case $opt in
     u) username="$OPTARG"
     ;;
@@ -27,7 +33,21 @@ while getopts ":u:c:e:r:h:d:s:g:p:k:?:" opt; do
     ;;
     s) dockerhubsecret="$OPTARG"
     ;;
-    g) adspat="$OPTARG"
+    a) configgitrepo=${configgitrepo/@/:$OPTARG@}
+    ;;
+    g) configgitrepo="$OPTARG"
+    ;;
+    w) configurationname="$OPTARG"
+    ;;
+    x) confighelmchartreponame="$OPTARG"
+    ;;
+    y) confighelmchartrepo="$OPTARG"
+    ;;
+    z) confighelmchart="$OPTARG"
+    ;;
+    v) valuefiles="$OPTARG"
+    ;;
+    o) overrideenvironment="$OPTARG"
     ;;
     p) kubernetescontrolplane="$OPTARG"
     ;;
@@ -44,7 +64,14 @@ while getopts ":u:c:e:r:h:d:s:g:p:k:?:" opt; do
     echo "h = name of Docker Hub user (default: $dockeruser)"
     echo "d = Docker Hub PAT to use for connecting - if blank (default) then no secret will be created"
     echo "s = name of secret used to store Docker Hub credentials (default: $dockerhubsecret)"
-    echo "g = Azure DevOps Services PAT to use for populating standard CABI configuration"
+    echo "a = Azure DevOps Services PAT to use for populating standard CABI configuration"
+    echo "g = Specifies the a Git repo which contains a configuration repo to apply (default: $configgitrepo)"
+    echo "w = name of the release created for common configuration values (default: $configurationname)"
+    echo "x = name to give the Helm chart repo (default: $confighelmchartreponame)"
+    echo "y = URL of the Helm chart repo (default: $confighelmchartrepo)"
+    echo "z = name of the configuration Helm chart to install (default: $confighelmchart)"
+    echo "v = a comma-delimited list of configuration files to import in the order the should be imported (default: $valuefiles)"
+    echo "o = the environment that should be used instead of the default (default: $overrideenvironment)"
     echo "k = if true, user certificates are added to the local configuration to allow use on this machine (default: $keepusercerts)"
     echo "p = Protocol, IP/name and port of Kubernetes control plane (default: $kubernetescontrolplane)"
     exit 0
@@ -145,20 +172,29 @@ kubectl delete secret $dockerhubsecret -n sandbox-$username
 kubectl create secret docker-registry $dockerhubsecret --docker-username=$dockeruser --docker-password=$dockerpat --docker-email= --namespace sandbox-$username
 fi
 
-if [ "$adspat" != "" ]; then
+if [ "$configgitrepo" != "" ]; then
+
 echo fetching config from Git
 
-rm -R -f cabi-config
-git clone https://CABIADS:$adspat@dev.azure.com/CABIADS/CabiSites/_git/Cabi.Configuration cabi-config
+rm -R -f preinstalled-config
+git clone $configgitrepo preinstalled-config
 
 echo setting up config files using Helm chart
 
-helm repo add cabi https://helm.cabi.org/
+helm repo add $confighelmchartreponame $confighelmchartrepo
 helm repo update
-helm upgrade --namespace sandbox-$username --install -f cabi-config/common.yaml -f cabi-config/development.yaml -f cabi-config/sandbox.yaml --set cabiUrls.overrideNamespace=development cabi-configuration cabi/CabiConfiguration
+
+values=""
+IFS=',' read -r -a array <<< "$valuefiles"
+for valuefile in "${array[@]}"
+do
+values="$values -f preinstalled-config/$valuefile.yaml"
+done
+
+helm upgrade --namespace sandbox-$username --install $values --set cabiUrls.overrideNamespace=$overrideNamespace $configurationname $confighelmchartreponame/$confighelmchart
 
 echo removing configuration files from local disk
-rm -R -f cabi-config
+rm -R -f preinstalled-config
 
 fi
 
